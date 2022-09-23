@@ -1,0 +1,82 @@
+- hosts: all
+
+ tasks:
+
+ - name: "Docker repo with Yum "
+
+  yum_repository:
+
+    name: "Docker-ce"
+
+    baseurl: "https://download.docker.com/linux/centos/7/x86_64/stable/" 
+
+    description: "docker repo" 
+
+    gpgcheck: no
+
+
+ - name: "installing docker"
+
+  command: "yum install docker-ce --nobest -y"
+
+
+ - package: 
+
+    name: "python3"
+
+    state: present
+
+
+ - pip:
+
+    name: "docker-py"
+
+
+ - name: Starting docker service
+
+  service: 
+
+    name: "docker"
+
+    state: started
+
+    enabled: yes
+
+
+ - file:
+
+    state: directory
+
+    path: "/web"
+
+
+ - copy:
+
+    dest: "/web/test.html"
+
+    content: "Configuring Docker using Ansible ...!!!!"
+
+   
+
+ - name: "pull docker image "
+
+  docker_image:
+
+    name: httpd:latest
+
+    source: pull
+     
+
+ - docker_container:
+
+    name: "ansi_docker"
+
+    image: "httpd:latest"
+
+    state: started
+
+    exposed_ports: "80"
+
+    ports: "8080:80"
+
+    volumes: "/web:/usr/local/apache2/htdocs/"
